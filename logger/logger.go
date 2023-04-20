@@ -53,8 +53,7 @@ func getCallerPrettyfier(fullpath bool) func(f *runtime.Frame) (string, string) 
 			file = "???"
 			line = 1
 		} else {
-			slash := strings.LastIndex(file, "/")
-			if slash >= 0 {
+			if slash := strings.LastIndex(file, "/"); slash >= 0 {
 				file = file[slash+1:]
 			}
 		}
