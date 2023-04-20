@@ -3,6 +3,7 @@ package logger
 import (
 	"bytes"
 	"os"
+	"os/exec"
 	"runtime"
 	"testing"
 
@@ -52,6 +53,21 @@ func TestSetLevel(t *testing.T) {
 	SetLevel(logrus.InfoLevel)
 }
 
+func TestSetFullpath(t *testing.T) {
+	SetFullpath(true)
+	output := captureOutput(func() {
+		Warnf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+	})
+	t.Log(output)
+	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="[^"]+/common/logger/logger_test.go:[0-9]+"`, output)
+	SetFullpath(false)
+	output = captureOutput(func() {
+		Warnf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+	})
+	t.Log(output)
+	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
+}
+
 func captureOutput(f func()) string {
 	buf := &bytes.Buffer{}
 	logger.SetOutput(buf)
@@ -87,4 +103,15 @@ func TestErrorf(t *testing.T) {
 		Errorf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
 	assert.Regexp(t, `time="[^"]+" level=error msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
+}
+
+func TestFatalf(t *testing.T) {
+	if os.Getenv("FATALF") == "1" {
+		Fatalf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		return
+	}
+	cmd := exec.Command(os.Args[0], "-test.run=TestFatalf")
+	cmd.Env = append(os.Environ(), "FATALF=1")
+	err := cmd.Run()
+	assert.EqualError(t, err, "exit status 1")
 }
