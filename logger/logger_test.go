@@ -88,6 +88,7 @@ func TestInfof(t *testing.T) {
 	output := captureOutput(func() {
 		Infof("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
+	t.Log(output)
 	assert.Regexp(t, `time="[^"]+" level=info msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
 }
 
@@ -95,6 +96,7 @@ func TestWarnf(t *testing.T) {
 	output := captureOutput(func() {
 		Warnf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
+	t.Log(output)
 	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
 }
 
@@ -102,6 +104,7 @@ func TestErrorf(t *testing.T) {
 	output := captureOutput(func() {
 		Errorf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
+	t.Log(output)
 	assert.Regexp(t, `time="[^"]+" level=error msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
 }
 

@@ -27,7 +27,7 @@ func getCallerPrettyfier() func(f *runtime.Frame) (string, string) {
 	return func(f *runtime.Frame) (string, string) {
 		// https://github.com/sirupsen/logrus/blob/v1.9.0/example_custom_caller_test.go
 		// https://github.com/kubernetes/klog/blob/v2.90.1/klog.go#L644
-		_, file, line, ok := runtime.Caller(10)
+		_, file, line, ok := runtime.Caller(9)
 		if !ok {
 			file = "???"
 			line = 1
