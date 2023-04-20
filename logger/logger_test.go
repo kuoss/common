@@ -2,6 +2,7 @@ package logger
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -117,11 +118,20 @@ func TestErrorf(t *testing.T) {
 
 func TestFatalf(t *testing.T) {
 	if os.Getenv("FATALF") == "1" {
-		Fatalf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		Fatalf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 		return
 	}
 	cmd := exec.Command(os.Args[0], "-test.run=TestFatalf")
 	cmd.Env = append(os.Environ(), "FATALF=1")
 	err := cmd.Run()
 	assert.EqualError(t, err, "exit status 1")
+
+	cmd2 := exec.Command(os.Args[0], "-test.run=TestFatalf")
+	cmd2.Env = append(os.Environ(), "FATALF=1")
+	stderr, _ := cmd2.StderrPipe()
+	_ = cmd2.Start()
+	outputBytes, _ := io.ReadAll(stderr)
+	output := string(outputBytes)
+	t.Log(output)
+	assert.Regexp(t, `time="[^"]+" level=fatal msg="hello=world lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
 }

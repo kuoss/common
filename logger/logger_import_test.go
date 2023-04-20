@@ -2,6 +2,7 @@ package logger_test
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"os/exec"
 	"testing"
@@ -18,13 +19,13 @@ func TestSetLevel(t *testing.T) {
 
 	logger.SetLevel(logger.DebugLevel)
 	output1 := captureOutput(func() {
-		logger.Debugf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		logger.Debugf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 	})
-	assert.Regexp(t, `time="[^"]+" level=debug msg="hello=hello lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output1)
+	assert.Regexp(t, `time="[^"]+" level=debug msg="hello=world lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output1)
 
 	logger.SetLevel(logger.InfoLevel)
 	output2 := captureOutput(func() {
-		logger.Debugf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		logger.Debugf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 	})
 	assert.Equal(t, "", output2)
 }
@@ -33,17 +34,17 @@ func TestSetFullpath(t *testing.T) {
 
 	logger.SetFullpath(true)
 	output := captureOutput(func() {
-		logger.Warnf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		logger.Warnf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 	})
 	t.Log(output)
-	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="[^"]+/common/logger/logger_import_test.go:[0-9]+"`, output)
+	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=world lorem=ipsum number=42" file="[^"]+/common/logger/logger_import_test.go:[0-9]+"`, output)
 
 	logger.SetFullpath(false)
 	output = captureOutput(func() {
-		logger.Warnf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		logger.Warnf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 	})
 	t.Log(output)
-	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
+	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=world lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 }
 
 func captureOutput(f func()) string {
@@ -56,42 +57,51 @@ func captureOutput(f func()) string {
 
 func TestDebugf(t *testing.T) {
 	output := captureOutput(func() {
-		logger.Debugf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		logger.Debugf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 	})
 	assert.Equal(t, "", output)
 }
 
 func TestInfof(t *testing.T) {
 	output := captureOutput(func() {
-		logger.Infof("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		logger.Infof("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 	})
 	t.Log(output)
-	assert.Regexp(t, `time="[^"]+" level=info msg="hello=hello lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
+	assert.Regexp(t, `time="[^"]+" level=info msg="hello=world lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 }
 
 func TestWarnf(t *testing.T) {
 	output := captureOutput(func() {
-		logger.Warnf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		logger.Warnf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 	})
 	t.Log(output)
-	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
+	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=world lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 }
 
 func TestErrorf(t *testing.T) {
 	output := captureOutput(func() {
-		logger.Errorf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		logger.Errorf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 	})
 	t.Log(output)
-	assert.Regexp(t, `time="[^"]+" level=error msg="hello=hello lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
+	assert.Regexp(t, `time="[^"]+" level=error msg="hello=world lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 }
 
-func TestFatalf(t *testing.T) {
+func TestImportFatalf(t *testing.T) {
 	if os.Getenv("FATALF") == "1" {
-		logger.Fatalf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+		logger.Fatalf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 		return
 	}
-	cmd := exec.Command(os.Args[0], "-test.run=TestFatalf")
+	cmd := exec.Command(os.Args[0], "-test.run=TestImportFatalf")
 	cmd.Env = append(os.Environ(), "FATALF=1")
 	err := cmd.Run()
 	assert.EqualError(t, err, "exit status 1")
+
+	cmd2 := exec.Command(os.Args[0], "-test.run=TestImportFatalf")
+	cmd2.Env = append(os.Environ(), "FATALF=1")
+	stderr, _ := cmd2.StderrPipe()
+	_ = cmd2.Start()
+	outputBytes, _ := io.ReadAll(stderr)
+	output := string(outputBytes)
+	t.Log(output)
+	assert.Regexp(t, `time="[^"]+" level=fatal msg="hello=world lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 }
