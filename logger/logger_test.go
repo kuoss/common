@@ -11,6 +11,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	dummyFrame = &runtime.Frame{Function: "github.com/kuoss/example/pkg.Func1", File: "/example/pkg/file1.go"}
+)
+
 func TestInit(t *testing.T) {
 	assert.NotNil(t, logger)
 	assert.NotZero(t, logger)
@@ -19,38 +23,42 @@ func TestInit(t *testing.T) {
 	assert.NotZero(t, logger.Formatter)
 	assert.True(t, logger.Formatter.(*logrus.TextFormatter).FullTimestamp)
 	assert.NotZero(t, logger.Formatter.(*logrus.TextFormatter).CallerPrettyfier)
-	funcname, filename := logger.Formatter.(*logrus.TextFormatter).CallerPrettyfier(&runtime.Frame{
-		PC:       0,
-		Func:     &runtime.Func{},
-		Function: "github.com/kuoss/lethe/logger.Func1", // not zero
-		File:     "/a/b/c/file1.go",                     // not zero
-		Line:     0,
-		Entry:    0,
-	})
+
+	funcname, filename := logger.Formatter.(*logrus.TextFormatter).CallerPrettyfier(dummyFrame)
 	assert.Equal(t, "", funcname)
 	assert.Equal(t, "???:1", filename)
 }
 
 func TestGetCallerPrettyfier(t *testing.T) {
-	callerPrettyfier := getCallerPrettyfier()
-	funcname, filename := callerPrettyfier(&runtime.Frame{
-		PC:       0,
-		Func:     &runtime.Func{},
-		Function: "github.com/kuoss/lethe/logger.Func1", // not zero
-		File:     "/a/b/c/file1.go",                     // not zero
-		Line:     0,
-		Entry:    0,
-	})
+	var funcname string
+	var filename string
+
+	funcname, filename = getCallerPrettyfier(false)(dummyFrame)
+	assert.Equal(t, "", funcname)
+	assert.Equal(t, "???:1", filename)
+
+	funcname, filename = getCallerPrettyfier(true)(dummyFrame)
 	assert.Equal(t, "", funcname)
 	assert.Equal(t, "???:1", filename)
 }
 
 func TestSetLevel(t *testing.T) {
-	for _, level := range logrus.AllLevels {
+	for _, level := range AllLevels {
 		SetLevel(level)
-		assert.Equal(t, level, logger.Level)
+		assert.Equal(t, level, GetLevel())
 	}
-	SetLevel(logrus.InfoLevel)
+
+	SetLevel(DebugLevel)
+	output1 := captureOutput(func() {
+		Debugf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+	})
+	assert.Regexp(t, `time="[^"]+" level=debug msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output1)
+
+	SetLevel(InfoLevel)
+	output2 := captureOutput(func() {
+		Debugf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
+	})
+	assert.Equal(t, "", output2)
 }
 
 func TestSetFullpath(t *testing.T) {
@@ -70,9 +78,9 @@ func TestSetFullpath(t *testing.T) {
 
 func captureOutput(f func()) string {
 	buf := &bytes.Buffer{}
-	logger.SetOutput(buf)
+	SetOutput(buf)
 	f()
-	logger.SetOutput(os.Stderr)
+	SetOutput(os.Stderr)
 	return buf.String()
 }
 
@@ -80,8 +88,7 @@ func TestDebugf(t *testing.T) {
 	output := captureOutput(func() {
 		Debugf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
-	// no output ( logger.Level == InfoLevel )
-	assert.Regexp(t, ``, output)
+	assert.Equal(t, "", output)
 }
 
 func TestInfof(t *testing.T) {
