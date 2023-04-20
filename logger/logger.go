@@ -27,8 +27,29 @@ var (
 func init() {
 	logger = logrus.New()
 	logger.SetReportCaller(true)
-	SetFullpath(false)
 	SetLevel(InfoLevel)
+	SetFullpath(false)
+}
+
+// setters & getters...
+
+func SetOutput(output io.Writer) {
+	logger.SetOutput(output)
+}
+
+func SetLevel(level Level) {
+	logger.SetLevel(logrus.Level(level))
+}
+
+func GetLevel() Level {
+	return Level(logger.GetLevel())
+}
+
+func SetFullpath(fullpath bool) {
+	logger.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp:    true,
+		CallerPrettyfier: getCallerPrettyfier(fullpath),
+	})
 }
 
 func getCallerPrettyfier(fullpath bool) func(f *runtime.Frame) (string, string) {
@@ -58,28 +79,7 @@ func getCallerPrettyfier(fullpath bool) func(f *runtime.Frame) (string, string) 
 	}
 }
 
-// setters & getters
-
-func SetLevel(level Level) {
-	logger.SetLevel(logrus.Level(level))
-}
-
-func GetLevel() Level {
-	return Level(logger.GetLevel())
-}
-
-func SetOutput(output io.Writer) {
-	logger.SetOutput(output)
-}
-
-func SetFullpath(fullpath bool) {
-	logger.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp:    true,
-		CallerPrettyfier: getCallerPrettyfier(fullpath),
-	})
-}
-
-// log functions
+// log functions...
 
 func Debugf(format string, args ...interface{}) {
 	logger.Debugf(format, args...)
