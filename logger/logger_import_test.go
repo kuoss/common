@@ -1,4 +1,4 @@
-package tester
+package logger_test
 
 import (
 	"bytes"
@@ -20,7 +20,7 @@ func TestSetLevel(t *testing.T) {
 	output1 := captureOutput(func() {
 		logger.Debugf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
-	assert.Regexp(t, `time="[^"]+" level=debug msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output1)
+	assert.Regexp(t, `time="[^"]+" level=debug msg="hello=hello lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output1)
 
 	logger.SetLevel(logger.InfoLevel)
 	output2 := captureOutput(func() {
@@ -36,14 +36,14 @@ func TestSetFullpath(t *testing.T) {
 		logger.Warnf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
 	t.Log(output)
-	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="[^"]+/common/tester/logger_test.go:[0-9]+"`, output)
+	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="[^"]+/common/logger/logger_import_test.go:[0-9]+"`, output)
 
 	logger.SetFullpath(false)
 	output = captureOutput(func() {
 		logger.Warnf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
 	t.Log(output)
-	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
+	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 }
 
 func captureOutput(f func()) string {
@@ -66,7 +66,7 @@ func TestInfof(t *testing.T) {
 		logger.Infof("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
 	t.Log(output)
-	assert.Regexp(t, `time="[^"]+" level=info msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
+	assert.Regexp(t, `time="[^"]+" level=info msg="hello=hello lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 }
 
 func TestWarnf(t *testing.T) {
@@ -74,7 +74,7 @@ func TestWarnf(t *testing.T) {
 		logger.Warnf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
 	t.Log(output)
-	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
+	assert.Regexp(t, `time="[^"]+" level=warning msg="hello=hello lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 }
 
 func TestErrorf(t *testing.T) {
@@ -82,7 +82,7 @@ func TestErrorf(t *testing.T) {
 		logger.Errorf("hello=%s lorem=%s number=%d", "hello", "ipsum", 42)
 	})
 	t.Log(output)
-	assert.Regexp(t, `time="[^"]+" level=error msg="hello=hello lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
+	assert.Regexp(t, `time="[^"]+" level=error msg="hello=hello lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 }
 
 func TestFatalf(t *testing.T) {
