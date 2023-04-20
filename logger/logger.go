@@ -27,10 +27,7 @@ var (
 func init() {
 	logger = logrus.New()
 	logger.SetReportCaller(true)
-	logger.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp:    true,
-		CallerPrettyfier: getCallerPrettyfier(false),
-	})
+	SetFullpath(false)
 	SetLevel(InfoLevel)
 }
 
