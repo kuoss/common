@@ -12,7 +12,7 @@ import (
 func CaptureChildTest(f func()) (stdout string, stderr string, err error) {
 	if os.Getenv("CHILD") == "1" {
 		f()
-		return "", "", nil
+		return
 	}
 	testRun, err := getTestRun()
 	if err != nil {
@@ -25,9 +25,10 @@ func CaptureChildTest(f func()) (stdout string, stderr string, err error) {
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 	err = cmd.Run()
-	stdout = stdoutBuf.String()
-	stderr = stderrBuf.String()
-	return
+	if err != nil {
+		return "", "", fmt.Errorf("error on Run: %w", err)
+	}
+	return stdoutBuf.String(), stderrBuf.String(), nil
 }
 
 func getTestRun() (string, error) {
