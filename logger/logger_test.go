@@ -2,7 +2,6 @@ package logger
 
 import (
 	"bytes"
-	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -123,15 +122,11 @@ func TestFatalf(t *testing.T) {
 	}
 	cmd := exec.Command(os.Args[0], "-test.run=TestFatalf")
 	cmd.Env = append(os.Environ(), "FATALF=1")
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
 	err := cmd.Run()
-	assert.EqualError(t, err, "exit status 1")
-
-	cmd2 := exec.Command(os.Args[0], "-test.run=TestFatalf")
-	cmd2.Env = append(os.Environ(), "FATALF=1")
-	stderr, _ := cmd2.StderrPipe()
-	_ = cmd2.Start()
-	outputBytes, _ := io.ReadAll(stderr)
-	output := string(outputBytes)
+	output := stderr.String()
 	t.Log(output)
 	assert.Regexp(t, `time="[^"]+" level=fatal msg="hello=world lorem=ipsum number=42" file="logger_test.go:[0-9]+"`, output)
+	assert.Error(t, err, "exit status 1")
 }

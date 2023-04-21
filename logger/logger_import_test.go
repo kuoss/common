@@ -2,7 +2,6 @@ package logger_test
 
 import (
 	"bytes"
-	"io"
 	"os"
 	"os/exec"
 	"testing"
@@ -86,22 +85,18 @@ func TestErrorf(t *testing.T) {
 	assert.Regexp(t, `time="[^"]+" level=error msg="hello=world lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 }
 
-func TestImportFatalf(t *testing.T) {
+func TestFatalf_import(t *testing.T) {
 	if os.Getenv("FATALF") == "1" {
 		logger.Fatalf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 		return
 	}
-	cmd := exec.Command(os.Args[0], "-test.run=TestImportFatalf")
+	cmd := exec.Command(os.Args[0], "-test.run=TestFatalf_import")
 	cmd.Env = append(os.Environ(), "FATALF=1")
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
 	err := cmd.Run()
-	assert.EqualError(t, err, "exit status 1")
-
-	cmd2 := exec.Command(os.Args[0], "-test.run=TestImportFatalf")
-	cmd2.Env = append(os.Environ(), "FATALF=1")
-	stderr, _ := cmd2.StderrPipe()
-	_ = cmd2.Start()
-	outputBytes, _ := io.ReadAll(stderr)
-	output := string(outputBytes)
+	output := stderr.String()
 	t.Log(output)
 	assert.Regexp(t, `time="[^"]+" level=fatal msg="hello=world lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
+	assert.Error(t, err, "exit status 1")
 }
