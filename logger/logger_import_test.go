@@ -3,10 +3,10 @@ package logger_test
 import (
 	"bytes"
 	"os"
-	"os/exec"
 	"testing"
 
 	"github.com/kuoss/common/logger"
+	"github.com/kuoss/common/tester"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -86,16 +86,9 @@ func TestErrorf(t *testing.T) {
 }
 
 func TestFatalf_import(t *testing.T) {
-	if os.Getenv("CHILD") == "1" {
+	_, output, err := tester.CaptureChildTest(func() {
 		logger.Fatalf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
-		return
-	}
-	cmd := exec.Command(os.Args[0], "-test.run=TestFatalf_import")
-	cmd.Env = append(os.Environ(), "CHILD=1")
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-	err := cmd.Run()
-	output := stderr.String()
+	})
 	t.Log(output)
 	assert.Regexp(t, `time="[^"]+" level=fatal msg="hello=world lorem=ipsum number=42" file="logger_import_test.go:[0-9]+"`, output)
 	assert.Error(t, err, "exit status 1")
