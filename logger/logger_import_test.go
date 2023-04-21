@@ -86,12 +86,12 @@ func TestErrorf(t *testing.T) {
 }
 
 func TestFatalf_import(t *testing.T) {
-	if os.Getenv("FATALF") == "1" {
+	if os.Getenv("CHILD") == "1" {
 		logger.Fatalf("hello=%s lorem=%s number=%d", "world", "ipsum", 42)
 		return
 	}
 	cmd := exec.Command(os.Args[0], "-test.run=TestFatalf_import")
-	cmd.Env = append(os.Environ(), "FATALF=1")
+	cmd.Env = append(os.Environ(), "CHILD=1")
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	err := cmd.Run()
