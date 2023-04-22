@@ -11,7 +11,7 @@ import (
 func CaptureChildTest(f func()) (stdout string, stderr string, err error) {
 	if os.Getenv("CHILD") == "1" {
 		f()
-		return
+		os.Exit(0)
 	}
 	cmd := exec.Command(os.Args[0], "-test.run="+getTestRun())
 	cmd.Env = append(os.Environ(), "CHILD=1")
