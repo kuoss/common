@@ -85,7 +85,7 @@ func TestErrorf(t *testing.T) {
 	assert.Regexp(t, `time="[^"]+" level=error msg="hello=world number=42" file="logger_outer_test.go:[0-9]+"`, output)
 }
 
-func TestFatalf_import(t *testing.T) {
+func TestFatalf_outer(t *testing.T) {
 	_, output, err := tester.CaptureChildTest(func() {
 		logger.Fatalf("hello=%s number=%d", "world", 42)
 	})
