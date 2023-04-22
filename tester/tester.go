@@ -2,7 +2,6 @@ package tester
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
@@ -14,28 +13,21 @@ func CaptureChildTest(f func()) (stdout string, stderr string, err error) {
 		f()
 		return
 	}
-	testRun, err := getTestRun()
-	if err != nil {
-		return "", "", fmt.Errorf("error on getTestRun: %w", err)
-	}
-	cmd := exec.Command(os.Args[0], "-test.run="+testRun)
+	cmd := exec.Command(os.Args[0], "-test.run="+getTestRun())
 	cmd.Env = append(os.Environ(), "CHILD=1")
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
-	err = cmd.Run() // don't wrap this error
+	err = cmd.Run()
 	return stdoutBuf.String(), stderrBuf.String(), err
 }
 
-func getTestRun() (string, error) {
-	pc, _, _, ok := runtime.Caller(2)
-	if !ok {
-		return "", fmt.Errorf("not ok on Caller")
-	}
+func getTestRun() string {
+	pc, _, _, _ := runtime.Caller(2) // always ok
 	name := runtime.FuncForPC(pc).Name()
 	if dot := strings.LastIndex(name, "."); dot >= 0 {
 		name = name[dot+1:]
 	}
-	return name, nil
+	return name
 }
