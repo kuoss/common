@@ -20,8 +20,9 @@ const (
 )
 
 var (
-	logger    *logrus.Logger
-	AllLevels = []Level{FatalLevel, ErrorLevel, WarnLevel, InfoLevel, DebugLevel}
+	logger     *logrus.Logger
+	AllLevels      = []Level{FatalLevel, ErrorLevel, WarnLevel, InfoLevel, DebugLevel}
+	callerSkip int = 10 // for prod(default), maybe 9 for test
 )
 
 func init() {
@@ -52,6 +53,10 @@ func SetFullpath(fullpath bool) {
 	})
 }
 
+func SetCallerSkip(skip int) {
+	callerSkip = skip
+}
+
 func getCallerPrettyfier(fullpath bool) func(f *runtime.Frame) (string, string) {
 	// https://github.com/sirupsen/logrus/blob/v1.9.0/example_custom_caller_test.go
 	// https://github.com/kubernetes/klog/blob/v2.90.1/klog.go#L644
@@ -66,7 +71,7 @@ func getCallerPrettyfier(fullpath bool) func(f *runtime.Frame) (string, string) 
 		}
 	}
 	return func(f *runtime.Frame) (string, string) {
-		_, file, line, ok := runtime.Caller(9)
+		_, file, line, ok := runtime.Caller(callerSkip)
 		if !ok {
 			file = "???"
 			line = 1
