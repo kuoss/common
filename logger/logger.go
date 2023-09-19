@@ -12,17 +12,21 @@ import (
 type Level logrus.Level
 
 const (
-	FatalLevel Level = Level(logrus.FatalLevel)
-	ErrorLevel Level = Level(logrus.ErrorLevel)
-	WarnLevel  Level = Level(logrus.WarnLevel)
-	InfoLevel  Level = Level(logrus.InfoLevel)
-	DebugLevel Level = Level(logrus.DebugLevel)
+	FatalLevel Level = Level(logrus.FatalLevel) // "fatal"
+	ErrorLevel Level = Level(logrus.ErrorLevel) // "error"
+	WarnLevel  Level = Level(logrus.WarnLevel)  // "warn"
+	InfoLevel  Level = Level(logrus.InfoLevel)  // "info"
+	DebugLevel Level = Level(logrus.DebugLevel) // "debug"
 )
+
+func (level Level) String() string {
+	return logrus.Level(level).String()
+}
 
 var (
 	logger     *logrus.Logger
 	AllLevels      = []Level{FatalLevel, ErrorLevel, WarnLevel, InfoLevel, DebugLevel}
-	callerSkip int = 10 // for prod(default), maybe 9 for test
+	callerSkip int = 10 // 10 for prod(default), maybe 9 for goroutine or test code
 )
 
 func init() {
