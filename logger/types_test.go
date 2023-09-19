@@ -11,11 +11,13 @@ func TestString(t *testing.T) {
 		logLevel Level
 		want     string
 	}{
+		{PanicLevel, "panic"},
 		{FatalLevel, "fatal"},
 		{ErrorLevel, "error"},
 		{WarnLevel, "warning"},
 		{InfoLevel, "info"},
 		{DebugLevel, "debug"},
+		{TraceLevel, "trace"},
 	}
 	for _, tc := range testCases {
 		t.Run("", func(t *testing.T) {
