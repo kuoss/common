@@ -72,10 +72,8 @@ jobs:
     steps:
     - uses: actions/setup-go@v4
     - uses: actions/checkout@v3
-    - run: go test ./... -race -covermode=atomic -coverprofile=coverage.out
-    # https://about.codecov.io/blog/getting-started-with-code-coverage-for-golang/
+    - run: go test ./... -race -coverprofile=coverage.out
     - uses: codecov/codecov-action@v3
-    # https://github.com/mattn/goveralls#github-actions
     - run: go install github.com/mattn/goveralls@latest
     - run: goveralls -service=github -coverprofile=coverage.out
       env:
@@ -87,4 +85,4 @@ jobs:
     - uses: actions/setup-go@v4
     - uses: actions/checkout@v3
     - run: go install github.com/google/go-licenses@v1.6.0
-    - run: go-licenses check .
+    - run: go-licenses check ./logger ./tester
