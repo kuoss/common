@@ -6,6 +6,9 @@ go mod tidy
 go fmt ./...
 go vet ./...
 
+./hack/misspell.sh
+./hack/gocyclo.sh
+
 which goimports || go install golang.org/x/tools/cmd/goimports@latest
 goimports -local -v -w .
 

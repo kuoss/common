@@ -9,20 +9,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type Level logrus.Level
-
-const (
-	FatalLevel Level = Level(logrus.FatalLevel)
-	ErrorLevel Level = Level(logrus.ErrorLevel)
-	WarnLevel  Level = Level(logrus.WarnLevel)
-	InfoLevel  Level = Level(logrus.InfoLevel)
-	DebugLevel Level = Level(logrus.DebugLevel)
-)
-
 var (
 	logger     *logrus.Logger
-	AllLevels      = []Level{FatalLevel, ErrorLevel, WarnLevel, InfoLevel, DebugLevel}
-	callerSkip int = 10 // for prod(default), maybe 9 for test
+	AllLevels      = []Level{PanicLevel, FatalLevel, ErrorLevel, WarnLevel, InfoLevel, DebugLevel, TraceLevel}
+	callerSkip int = 10 // 10 for prod(default), maybe 9 for goroutine or test code
 )
 
 func init() {
