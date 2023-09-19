@@ -4,8 +4,8 @@ MIN_COVER=80
 cd $(dirname $0)/..
 export PS4='[$(basename $0):$LINENO] '
 
-echo + go test ./... -v -failfast -race -covermode=atomic -coverprofile /tmp/cover.out
-       go test ./... -v -failfast -race -covermode=atomic -coverprofile /tmp/cover.out
+echo + go test ./... -v -failfast -race -coverprofile /tmp/cover.out
+       go test ./... -v -failfast -race -coverprofile /tmp/cover.out
 if [[ $? != 0 ]]; then
     echo "❌ FAIL - test failed"
     exit 1

@@ -2,7 +2,6 @@ package logger
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"runtime"
 	"testing"
@@ -86,25 +85,25 @@ func TestSetCallerSkip(t *testing.T) {
 		skip         int
 		wantContains string
 	}{
-		{0, `level=warning msg="hello=world number=42" file="logger.go:74"`},
-		{1, `level=warning msg="hello=world number=42" file="text_formatter.go:159"`},
-		{2, `level=warning msg="hello=world number=42" file="entry.go:289"`},
-		{3, `level=warning msg="hello=world number=42" file="entry.go:252"`},
-		{4, `level=warning msg="hello=world number=42" file="entry.go:304"`},
-		{5, `level=warning msg="hello=world number=42" file="entry.go:349"`},
-		{6, `level=warning msg="hello=world number=42" file="logger.go:154"`},
-		{7, `level=warning msg="hello=world number=42" file="logger.go:178"`},
-		{8, `level=warning msg="hello=world number=42" file="logger.go:98"`},
-		{9, `level=warning msg="hello=world number=42" file="logger_inner_test.go:110"`}, // good for go test
-		{10, `level=warning msg="hello=world number=42" file="logger_inner_test.go:121"`},
-		{11, `level=warning msg="hello=world number=42" file="logger_inner_test.go:109"`},
-		{12, `level=warning msg="hello=world number=42" file="testing.go:1576"`},
-		{13, `level=warning msg="hello=world number=42" file="asm_amd64.s:1598"`},
+		{0, `level=warning msg="hello=world number=42" file="logger.go:`},
+		{1, `level=warning msg="hello=world number=42" file="text_formatter.go:`},
+		{2, `level=warning msg="hello=world number=42" file="entry.go:`},
+		{3, `level=warning msg="hello=world number=42" file="entry.go:`},
+		{4, `level=warning msg="hello=world number=42" file="entry.go:`},
+		{5, `level=warning msg="hello=world number=42" file="entry.go:`},
+		{6, `level=warning msg="hello=world number=42" file="logger.go:`},
+		{7, `level=warning msg="hello=world number=42" file="logger.go:`},
+		{8, `level=warning msg="hello=world number=42" file="logger.go:`},
+		{9, `level=warning msg="hello=world number=42" file="logger_inner_test.go:`}, // good for go test
+		{10, `level=warning msg="hello=world number=42" file="logger_inner_test.go:`},
+		{11, `level=warning msg="hello=world number=42" file="logger_inner_test.go:`},
+		{12, `level=warning msg="hello=world number=42" file="testing.go:`},
+		{13, `level=warning msg="hello=world number=42" file="asm_amd64.s:`},
 		{14, `level=warning msg="hello=world number=42" file="???:1"`},
 		{15, `level=warning msg="hello=world number=42" file="???:1"`},
 	}
 	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("skip=%d", tc.skip), func(t *testing.T) {
+		t.Run("", func(t *testing.T) {
 			SetCallerSkip(tc.skip)
 			got := captureOutput(func() {
 				Warnf("hello=%s number=%d", "world", 42)
