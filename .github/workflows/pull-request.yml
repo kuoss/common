@@ -17,6 +17,18 @@ jobs:
         gofmt-path: '.'
         gofmt-flags: '-l -d'
 
+  misspell:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - run: make misspell
+
+  gocyclo:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v4
+    - run: make gocyclo
 
   goimports:
     runs-on: ubuntu-latest
@@ -68,3 +80,11 @@ jobs:
     - run: goveralls -service=github -coverprofile=coverage.out
       env:
         COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  go-licenses:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-go@v4
+    - uses: actions/checkout@v3
+    - run: go install github.com/google/go-licenses@v1.6.0
+    - run: go-licenses check .

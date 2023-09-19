@@ -9,13 +9,8 @@ go vet ./...
 ./hack/misspell.sh
 ./hack/gocyclo.sh
 
-which goimports || go install golang.org/x/tools/cmd/goimports@latest
-goimports -local -v -w .
-
-which staticcheck || go install honnef.co/go/tools/cmd/staticcheck@latest
-staticcheck ./...
-
-which golangci-lint || go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-golangci-lint run --timeout 5m
+./hack/goimports.sh
+./hack/staticcheck.sh
+./hack/golangci-lint.sh
 
 ./hack/test-cover.sh
