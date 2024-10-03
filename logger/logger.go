@@ -11,8 +11,8 @@ import (
 
 var (
 	logger     *logrus.Logger
-	AllLevels      = []Level{PanicLevel, FatalLevel, ErrorLevel, WarnLevel, InfoLevel, DebugLevel, TraceLevel}
-	callerSkip int = 10 // 10 for prod(default), maybe 9 for goroutine or test code
+	AllLevels  = []Level{PanicLevel, FatalLevel, ErrorLevel, WarnLevel, InfoLevel, DebugLevel, TraceLevel}
+	callerSkip = 10 // 10 for prod(default), maybe 9 for goroutine or test code
 )
 
 func init() {
@@ -51,7 +51,7 @@ func getCallerPrettyfier(fullpath bool) func(f *runtime.Frame) (string, string) 
 	// https://github.com/sirupsen/logrus/blob/v1.9.0/example_custom_caller_test.go
 	// https://github.com/kubernetes/klog/blob/v2.90.1/klog.go#L644
 	if fullpath {
-		return func(f *runtime.Frame) (string, string) {
+		return func(_ *runtime.Frame) (string, string) {
 			_, file, line, ok := runtime.Caller(9)
 			if !ok {
 				file = "???"
@@ -60,7 +60,7 @@ func getCallerPrettyfier(fullpath bool) func(f *runtime.Frame) (string, string) 
 			return "", fmt.Sprintf("%s:%d", file, line)
 		}
 	}
-	return func(f *runtime.Frame) (string, string) {
+	return func(_ *runtime.Frame) (string, string) {
 		_, file, line, ok := runtime.Caller(callerSkip)
 		if !ok {
 			file = "???"
