@@ -9,6 +9,7 @@ issues:
         - lll
 
 linters:
+  disable-all: true
   enable:
     #### default
     - errcheck
