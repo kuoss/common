@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCaptureChildTest_noExit(t *testing.T) {
-	stdout, stderr, err := CaptureChildTest(func() {
+func TestRunChild_noExit(t *testing.T) {
+	stdout, stderr, err := RunChild(func() {
 		fmt.Fprintf(os.Stdout, "Hello")
 		fmt.Fprintf(os.Stderr, "Lorem")
 		fmt.Fprintf(os.Stdout, "World")
@@ -20,8 +20,8 @@ func TestCaptureChildTest_noExit(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestCaptureChildTest_exit0(t *testing.T) {
-	stdout, stderr, err := CaptureChildTest(func() {
+func TestRunChild_exit0(t *testing.T) {
+	stdout, stderr, err := RunChild(func() {
 		fmt.Fprintf(os.Stdout, "Hello")
 		fmt.Fprintf(os.Stderr, "Lorem")
 		fmt.Fprintf(os.Stdout, "World")
@@ -33,8 +33,8 @@ func TestCaptureChildTest_exit0(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestCaptureChildTest_exit2(t *testing.T) {
-	stdout, stderr, err := CaptureChildTest(func() {
+func TestRunChild_exit2(t *testing.T) {
+	stdout, stderr, err := RunChild(func() {
 		fmt.Fprintf(os.Stdout, "Hello")
 		fmt.Fprintf(os.Stderr, "Lorem")
 		fmt.Fprintf(os.Stdout, "World")
@@ -46,13 +46,13 @@ func TestCaptureChildTest_exit2(t *testing.T) {
 	assert.Error(t, err, "exit status 2")
 }
 
-func TestGetTestRun(t *testing.T) {
-	assert.Equal(t, "tRunner", getTestRun())
+func TestGetCallingTestName(t *testing.T) {
+	assert.Equal(t, "tRunner", getCallingTestName())
 	// always ok at any depth
 	funcA := func() string {
-		return getTestRun()
+		return getCallingTestName()
 	}
-	assert.Equal(t, "TestGetTestRun", funcA())
+	assert.Equal(t, "TestGetCallingTestName", funcA())
 	funcB := func() string {
 		return funcA()
 	}

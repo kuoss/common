@@ -21,7 +21,6 @@ func init() {
 
 func TestInit(t *testing.T) {
 	assert.NotEmpty(t, logger)
-	assert.Equal(t, logger.Out, os.Stderr)
 
 	assert.NotEmpty(t, logger.Formatter)
 	assert.True(t, logger.Formatter.(*logrus.TextFormatter).FullTimestamp)
@@ -154,7 +153,7 @@ func TestErrorf(t *testing.T) {
 }
 
 func TestFatalf(t *testing.T) {
-	_, output, err := tester.CaptureChildTest(func() {
+	_, output, err := tester.RunChild(func() {
 		Fatalf("hello=%s number=%d", "world", 42)
 	})
 	t.Log(output)

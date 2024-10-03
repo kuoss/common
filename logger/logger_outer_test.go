@@ -125,7 +125,7 @@ func TestErrorf(t *testing.T) {
 }
 
 func TestFatalf_outer(t *testing.T) {
-	_, output, err := tester.CaptureChildTest(func() {
+	_, output, err := tester.RunChild(func() {
 		logger.Fatalf("hello=%s number=%d", "world", 42)
 	})
 	t.Log(output)

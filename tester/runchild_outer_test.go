@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCaptureChildTest_noExit(t *testing.T) {
-	stdout, stderr, err := tester.CaptureChildTest(func() {
+func TestRunChild_noExit(t *testing.T) {
+	stdout, stderr, err := tester.RunChild(func() {
 		fmt.Fprintf(os.Stdout, "Hello")
 		fmt.Fprintf(os.Stderr, "Lorem")
 		fmt.Fprintf(os.Stdout, "World")
@@ -21,8 +21,8 @@ func TestCaptureChildTest_noExit(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestCaptureChildTest_exit0(t *testing.T) {
-	stdout, stderr, err := tester.CaptureChildTest(func() {
+func TestRunChild_exit0(t *testing.T) {
+	stdout, stderr, err := tester.RunChild(func() {
 		fmt.Fprintf(os.Stdout, "Hello")
 		fmt.Fprintf(os.Stderr, "Lorem")
 		fmt.Fprintf(os.Stdout, "World")
@@ -34,8 +34,8 @@ func TestCaptureChildTest_exit0(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestCaptureChildTest_exit2(t *testing.T) {
-	stdout, stderr, err := tester.CaptureChildTest(func() {
+func TestRunChild_exit2(t *testing.T) {
+	stdout, stderr, err := tester.RunChild(func() {
 		fmt.Fprintf(os.Stdout, "Hello")
 		fmt.Fprintf(os.Stderr, "Lorem")
 		fmt.Fprintf(os.Stdout, "World")
