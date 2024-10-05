@@ -8,14 +8,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMustSetupDir_ValidFiles(t *testing.T) {
+func TestSetupDir_ValidFiles(t *testing.T) {
 	tempDir := t.TempDir()
 	sourceFile := filepath.Join(tempDir, "source.txt")
 	err := os.WriteFile(sourceFile, []byte("test data"), 0644)
 	assert.NoError(t, err)
 
 	pathsToCopy := map[string]string{sourceFile: ""}
-	destDir, cleanup := MustSetupDir(t, pathsToCopy)
+	destDir, cleanup := SetupDir(t, pathsToCopy)
 	defer cleanup()
 
 	assert.NoError(t, err)
@@ -27,7 +27,7 @@ func TestMustSetupDir_ValidFiles(t *testing.T) {
 	assert.Equal(t, "test data", string(content))
 }
 
-func TestMustSetupDir_DirectoryCopy(t *testing.T) {
+func TestSetupDir_DirectoryCopy(t *testing.T) {
 	tempDir := t.TempDir()
 	sourceDir := filepath.Join(tempDir, "sourceDir")
 	assert.NoError(t, os.Mkdir(sourceDir, 0755))
@@ -35,7 +35,7 @@ func TestMustSetupDir_DirectoryCopy(t *testing.T) {
 	assert.NoError(t, os.WriteFile(sourceFile, []byte("test data"), 0644))
 
 	pathsToCopy := map[string]string{sourceDir: ""}
-	destDir, cleanup := MustSetupDir(t, pathsToCopy)
+	destDir, cleanup := SetupDir(t, pathsToCopy)
 	defer cleanup()
 
 	destPath := filepath.Join(destDir, filepath.Base(sourceDir))
@@ -49,14 +49,14 @@ func TestMustSetupDir_DirectoryCopy(t *testing.T) {
 	assert.Equal(t, "test data", string(content))
 }
 
-func TestMustSetupDir_DestinationPath(t *testing.T) {
+func TestSetupDir_DestinationPath(t *testing.T) {
 	tempDir := t.TempDir()
 	sourceFile := filepath.Join(tempDir, "source.txt")
 	err := os.WriteFile(sourceFile, []byte("test data"), 0644)
 	assert.NoError(t, err)
 
 	pathsToCopy := map[string]string{sourceFile: "custom/destination.txt"}
-	destDir, cleanup := MustSetupDir(t, pathsToCopy)
+	destDir, cleanup := SetupDir(t, pathsToCopy)
 	defer cleanup()
 
 	destFile := filepath.Join(destDir, "custom/destination.txt")
@@ -113,10 +113,10 @@ func TestCopyFile(t *testing.T) {
 	assert.Equal(t, content, copiedContent)
 }
 
-func TestMustSetupDir_NonExistentSource(t *testing.T) {
+func TestSetupDir_NonExistentSource(t *testing.T) {
 	assert.Panics(t, func() {
 		pathsToCopy := map[string]string{"nonexistent.txt": ""}
-		_, cleanup := MustSetupDir(t, pathsToCopy)
+		_, cleanup := SetupDir(t, pathsToCopy)
 		defer cleanup()
 	})
 }
