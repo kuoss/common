@@ -10,7 +10,7 @@ import (
 )
 
 // mustFindProjectRoot finds the project root by looking for "go.mod" file.
-func mustFindProjectRoot() string {
+func FindProjectRoot() string {
 	dir, err := os.Getwd()
 	if err != nil {
 		panic(fmt.Errorf("failed to os.Getwd: %v", err))
@@ -30,11 +30,11 @@ func mustFindProjectRoot() string {
 }
 
 // SetupDir sets up a temporary test environment by copying necessary files and directories.
-func MustSetupDir(t *testing.T, pathsToCopy map[string]string) (string, func()) {
+func SetupDir(t *testing.T, pathsToCopy map[string]string) (string, func()) {
 	// Store the current working directory
 	wd, err := os.Getwd()
 	if err != nil {
-		panic(fmt.Errorf("MustSetupDir: failed to os.Getwd: %v", err))
+		panic(fmt.Errorf("SetupDir: failed to os.Getwd: %v", err))
 	}
 
 	// Create a temporary directory
@@ -46,11 +46,11 @@ func MustSetupDir(t *testing.T, pathsToCopy map[string]string) (string, func()) 
 	}
 	defer func() {
 		if err := os.Chdir(tempDir); err != nil {
-			panic(fmt.Errorf("MustSetupDir: failed to os.Chdir: %v", err))
+			panic(fmt.Errorf("SetupDir: failed to os.Chdir: %v", err))
 		}
 	}()
 
-	projectRoot := mustFindProjectRoot()
+	projectRoot := FindProjectRoot()
 
 	// Copy specified paths to the temporary directory
 	for source, destination := range pathsToCopy {
@@ -62,7 +62,7 @@ func MustSetupDir(t *testing.T, pathsToCopy map[string]string) (string, func()) 
 		}
 
 		if err := copyPath(sourcePath, destination); err != nil {
-			panic(fmt.Errorf("MustSetupDir: failed to copyPath: %v", err))
+			panic(fmt.Errorf("SetupDir: failed to copyPath: %v", err))
 		}
 	}
 
